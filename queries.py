@@ -61,7 +61,18 @@ def orders_per_customer(db):
     '''TO DO: return a list of tuples where each tupe contains the contactName
     of the customer and the number of orders they made (contactName,
     number_of_orders). Order the list by ascending number of orders'''
-    pass  # YOUR CODE HERE
+    query = '''
+    SELECT Customers.ContactName, COUNT(Orders.OrderID) as no_of_orders
+    FROM Customers
+    LEFT JOIN Orders
+    ON Customers.CustomerID = Orders.CustomerID
+    GROUP BY Customers.CustomerID
+    ORDER BY no_of_orders;
+    '''
+    db.execute(query)
+    results = db.fetchall()
+    # print(results)
+    return results
 
 
 conn = sqlite3.connect('data/ecommerce.sqlite')
