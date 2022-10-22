@@ -1,9 +1,20 @@
 # pylint:disable=C0111,C0103
-
+import sqlite3
 def detailed_orders(db):
     '''return a list of all orders (order_id, customer.contact_name,
     employee.firstname) ordered by order_id'''
-    pass  # YOUR CODE HERE
+    query = '''
+    SELECT OrderID, Customers.ContactName, Employees.FirstName
+FROM Orders
+JOIN Customers
+ON Orders.CustomerID = Customers.CustomerID
+JOIN Employees
+ON Orders.EmployeeID = Employees.EmployeeID
+ORDER BY OrderID
+    '''
+    db.execute(query)
+    results = db.fetchall()
+    return results
 
 def spent_per_customer(db):
     '''return the total amount spent per customer ordered by ascending total
@@ -14,7 +25,20 @@ def spent_per_customer(db):
         Simon  |   432
         ...
     '''
-    pass  # YOUR CODE HERE
+    query = '''
+    SELECT Customers.ContactName ,ROUND(SUM(UnitPrice*Quantity),2) as total
+    FROM OrderDetails
+    JOIN Orders
+    ON OrderDetails.OrderID = Orders.OrderID
+    JOIN Customers
+    ON Orders.CustomerID = Customers.CustomerID
+    GROUP BY Customers.ContactName
+    ORDER BY total;
+    '''
+    db.execute(query)
+    results = db.fetchall()
+    print(results)
+    return results
 
 def best_employee(db):
     '''Implement the best_employee method to determine who’s the best employee! By “best employee”, we mean the one who sells the most.
@@ -26,3 +50,9 @@ def orders_per_customer(db):
     of the customer and the number of orders they made (contactName,
     number_of_orders). Order the list by ascending number of orders'''
     pass  # YOUR CODE HERE
+
+
+conn = sqlite3.connect('data/ecommerce.sqlite')
+db = conn.cursor()
+
+spent_per_customer(db)
